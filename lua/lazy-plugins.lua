@@ -84,6 +84,25 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+  change_detection = {
+    notify = false,
+  },
+  checker = { enabled = false }, -- automatically check for plugin updates
+  performance = {
+    rtp = {
+      -- disable some rtp plugins
+      disabled_plugins = {
+        'gzip',
+        -- "matchit",
+        -- "matchparen",
+        'netrwPlugin',
+        'tarPlugin',
+        'tohtml',
+        'tutor',
+        'zipPlugin',
+      },
+    },
+  },
 })
 
 -- vim: ts=2 sts=2 sw=2 et

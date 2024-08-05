@@ -32,7 +32,7 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- save file
-vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
+vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -40,6 +40,10 @@ vim.keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Sav
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
+local function augroup(name)
+  return vim.api.nvim_create_augroup('kickstart_' .. name, { clear = true })
+end
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -48,4 +52,46 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+  pattern = { 'cpp', 'c' },
+  callback = function()
+    vim.b.autoformat = false
+  end,
+})
+
+-- close some filetypes with <q>
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup 'close_with_q',
+  pattern = {
+    'git',
+    'fugitive',
+    'diff',
+  },
+  callback = function(event)
+    vim.bo[event.buf].buflisted = false
+    vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = event.buf, silent = true })
+  end,
+})
+
+-- vim.api.nvim_create_autocmd("BufReadPost", {
+--   group = augroup("auto_clean_fugitive_bufs"),
+--   pattern = {
+--     "fugitive://*",
+--   },
+--   callback = function(event)
+--     vim.bo[event.buf].bufhidden = "delete"
+--   end,
+-- })
+
+-- close some filetypes with <q>
+-- vim.api.nvim_create_autocmd("FileType", {
+--   group = augroup("diffview_close_with_q"),
+--   pattern = {
+--     "DiffviewFiles",
+--   },
+--   callback = function(event)
+--     vim.bo[event.buf].buflisted = false
+--     vim.keymap.set("n", "q", "<cmd>DiffviewClose<cr>", { buffer = event.buf, silent = true })
+--   end,
+-- })
 -- vim: ts=2 sts=2 sw=2 et
